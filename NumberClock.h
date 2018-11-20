@@ -27,35 +27,31 @@ class NumberClock {
         tft->begin();
         tft->setRotation(1);
         tft->fillScreen(ILI9340_BLACK);
-        tft->setCursor(0, 50);
-        tft->setTextColor(ILI9340_WHITE);
         tft->setFont(&MyFont_Regular40pt7b);
-        tft->print(timeToString(t));
+        printTime(t, ILI9340_WHITE);
         previousTime = t;
         flick = true;
         previousMillis = millis();
     }
     void init();
     void updating();
+    void printTime(unsigned int t, unsigned long int color);
 };
 
 unsigned int NumberClock::getCurrentTime() {
-  return 25 * 30 + 9;
+  return 25 * 29 + 2;
 }
 
 void NumberClock::updating() {
   unsigned int t = getCurrentTime();
   if (t != previousTime) {
-    tft->setCursor(0, 50);
-    tft->setTextColor(ILI9340_BLACK);
-    tft->print(timeToString(previousTime));
-    tft->setTextColor(ILI9340_WHITE);
-    tft->print(timeToString(t));
+    printTime(previousTime, ILI9340_BLACK);
+    printTime(t, ILI9340_WHITE);
     previousTime = t;
   }
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= 1000) {
-    tft->setCursor(88, 56);
+    tft->setCursor(143, 100);
     if (flick) {
       tft->setTextColor(ILI9340_BLACK);
       tft->print(":");
@@ -74,4 +70,10 @@ String NumberClock::timeToString(unsigned int t) {
   } else {
     return String(t % 25) + ":" + String(t / 25);
   }
+}
+
+void NumberClock::printTime(unsigned int t, unsigned long int color) {
+  tft->setCursor(55, 100);
+  tft->setTextColor(color);
+  tft->print(timeToString(t));
 }
