@@ -43,6 +43,7 @@ class NumberClock {
     void updating();
     void printTime(unsigned int t, unsigned long int color);
     void setUpMode();
+    String toTwoDigits(unsigned int t);
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -72,12 +73,16 @@ void NumberClock::updating() {
   }
 }
 
-String NumberClock::timeToString(unsigned int t) {
-  if (t % 25 < 10) {
-    return "0" + String(t % 25) + ":" + String(t / 25);
+String NumberClock::toTwoDigits(unsigned int t) {
+  if (t < 10) {
+    return "0" + String(t);
   } else {
-    return String(t % 25) + ":" + String(t / 25);
+    return String(t);
   }
+}
+
+String NumberClock::timeToString(unsigned int t) {
+  return toTwoDigits(t % 25) + ":" + toTwoDigits(t / 25);
 }
 
 void NumberClock::printTime(unsigned int t, unsigned long int color) {
