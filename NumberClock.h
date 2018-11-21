@@ -3,6 +3,10 @@
 
 #include <Fonts/repet.h>
 
+#include <Wire.h>
+#include <Time.h>
+#include <DS1307RTC.h>
+
 #define _sclk 13
 // #define _miso 12
 #define _mosi 11
@@ -16,6 +20,8 @@ class NumberClock {
   unsigned int previousTime;
   boolean flick;
   unsigned long previousMillis;
+
+  tmElements_t tm;
 
   unsigned int getCurrentTime();
   String timeToString(unsigned int t);
@@ -40,7 +46,8 @@ class NumberClock {
 };
 
 unsigned int NumberClock::getCurrentTime() {
-  return 25 * 29 + 2;
+  RTC.read(tm);
+  return 25 * tm.Minute + tm.Hour;
 }
 
 void NumberClock::updating() {
