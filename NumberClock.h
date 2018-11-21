@@ -36,6 +36,7 @@ class NumberClock {
     void init();
     void updating();
     void printTime(unsigned int t, unsigned long int color);
+    void setUpMode();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -76,4 +77,8 @@ void NumberClock::printTime(unsigned int t, unsigned long int color) {
   tft->setCursor(55, 100);
   tft->setTextColor(color);
   tft->print(timeToString(t));
+}
+
+void NumberClock::setUpMode() {
+  Serial.println("Hello!");
 }
