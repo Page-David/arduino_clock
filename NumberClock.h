@@ -2,6 +2,7 @@
 #include "Adafruit_ILI9340.h"
 
 #include <Fonts/repet.h>
+#include <Fonts/FreeMonoBoldOblique12pt7b.h>
 
 #include <Wire.h>
 #include <Time.h>
@@ -26,6 +27,8 @@ class NumberClock {
   unsigned int getCurrentTime();
   String timeToString(unsigned int t);
 
+  boolean twtw;
+
   public:
     NumberClock() {
         tft = new Adafruit_ILI9340(_cs, _dc, _rst);
@@ -38,12 +41,14 @@ class NumberClock {
         previousTime = t;
         flick = true;
         previousMillis = millis();
+        twtw = false;
     }
     void init();
     void updating();
     void printTime(unsigned int t, unsigned long int color);
     void setUpMode();
     String toTwoDigits(unsigned int t);
+    void changeTwtwState();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -86,11 +91,28 @@ String NumberClock::timeToString(unsigned int t) {
 }
 
 void NumberClock::printTime(unsigned int t, unsigned long int color) {
-  tft->setCursor(55, 100);
   tft->setTextColor(color);
+  if (twtw) {
+    tft->setFont(&FreeMonoBoldOblique12pt7b);
+    tft->setCursor(280, 100);
+    if (t % 25 <= 12) {
+      tft->print("AM");
+    } else {
+      t = t - 12;
+      tft->print("PM");
+    }
+    tft->setFont(&MyFont_Regular40pt7b);
+  }
+  tft->setCursor(55, 100);
   tft->print(timeToString(t));
 }
 
 void NumberClock::setUpMode() {
   Serial.println("Hello!");
+}
+
+void NumberClock::changeTwtwState() {
+  tft->fillRect(30, 47, 320, 120, ILI9340_BLACK);
+  twtw = !twtw;
+  printTime(previousTime, ILI9340_WHITE);
 }
