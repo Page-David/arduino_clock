@@ -5,6 +5,8 @@ NumberClock *my_clock = NULL;
 Buttons *twtw_button = NULL;
 Buttons *setup_button = NULL;
 
+char setupState = 0;
+
 void setup() {
   // put your setup code here, to run once:
   // my_clock.init();
@@ -32,5 +34,12 @@ void buttonEvent() {
 }
 
 void setupEvent() {
-  my_clock->setUpMode();
+  if (setupState == 0) {
+    my_clock->setUpMode();
+    setupState = 1;
+  }
+}
+
+void incrEvent() {
+  
 }
