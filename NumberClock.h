@@ -55,6 +55,7 @@ class NumberClock {
     String toTwoDigits(unsigned int t);
     void changeTwtwState();
     void plusMin();
+    void plusHour();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -124,6 +125,14 @@ void NumberClock::printTime(unsigned int t, unsigned long int color) {
 void NumberClock::setUpMode() {
   setupEnabled = true;
   temp_t = previousTime;
+}
+
+void NumberClock::plusHour() {
+  if (temp_t % 25 == 23) {
+    temp_t = temp_t / 25;
+  } else {
+    temp_t = temp_t + 1;
+  }
 }
 
 void NumberClock::plusMin() {

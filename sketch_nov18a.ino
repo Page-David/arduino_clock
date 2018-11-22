@@ -37,11 +37,15 @@ void setupEvent() {
   if (setupState == 0) {
     my_clock->setUpMode();
     setupState = 1;
+  } else if (setupState == 1) {
+    setupState = 2;
   }
 }
 
 void incrEvent() {
-  if (setupState == 1) {
+  if (setupState == 1){
+    my_clock->plusHour();
+  } else if (setupState == 2) {
     my_clock->plusMin();
   }
 }
