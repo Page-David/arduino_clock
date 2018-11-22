@@ -29,6 +29,9 @@ class NumberClock {
 
   boolean twtw;
 
+  boolean setupEnabled;
+  unsigned int temp_t;
+
   public:
     NumberClock() {
         tft = new Adafruit_ILI9340(_cs, _dc, _rst);
@@ -42,6 +45,8 @@ class NumberClock {
         flick = true;
         previousMillis = millis();
         twtw = false;
+        setupEnabled = false;
+        temp_t = 0;
     }
     void init();
     void updating();
@@ -57,8 +62,9 @@ unsigned int NumberClock::getCurrentTime() {
 }
 
 void NumberClock::updating() {
+  Serial.println(setupEnabled);
   unsigned int t = getCurrentTime();
-  if (t != previousTime) {
+  if (t != previousTime && !setupEnabled) {
     printTime(previousTime, ILI9340_BLACK);
     printTime(t, ILI9340_WHITE);
     previousTime = t;
@@ -68,10 +74,18 @@ void NumberClock::updating() {
     tft->setCursor(143, 100);
     if (flick) {
       tft->setTextColor(ILI9340_BLACK);
-      tft->print(":");
+      if (setupEnabled){
+        printTime(temp_t, ILI9340_BLACK);
+      } else {
+        tft->print(":");
+      }
     } else {
       tft->setTextColor(ILI9340_WHITE);
-      tft->print(":");
+      if (setupEnabled) {
+        printTime(temp_t, ILI9340_WHITE);
+      } else {
+        tft->print(":");
+      }
     }
     flick = !flick;
     previousMillis = currentMillis;
@@ -108,7 +122,8 @@ void NumberClock::printTime(unsigned int t, unsigned long int color) {
 }
 
 void NumberClock::setUpMode() {
-  Serial.println("Hello!");
+  setupEnabled = true;
+  temp_t = previousTime;
 }
 
 void NumberClock::changeTwtwState() {

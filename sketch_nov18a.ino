@@ -3,12 +3,14 @@
 
 NumberClock *my_clock = NULL;
 Buttons *twtw_button = NULL;
+Buttons *setup_button = NULL;
 
 void setup() {
   // put your setup code here, to run once:
   // my_clock.init();
   my_clock = new NumberClock();
   twtw_button = new Buttons(&buttonEvent, 150, 2);
+  setup_button = new Buttons(&setupEvent, 150, 4);
   Serial.begin(9600);
 }
 
@@ -17,6 +19,7 @@ void loop() {
   updateBCL();
   my_clock->updating();
   twtw_button->checkStates();
+  setup_button->checkStates();
 }
 
 void updateBCL() {
@@ -26,4 +29,9 @@ void updateBCL() {
 
 void buttonEvent() {
   my_clock->changeTwtwState();
+}
+
+void setupEvent() {
+  // Serial.println(1);
+  my_clock->setUpMode();
 }
