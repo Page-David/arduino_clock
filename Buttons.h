@@ -6,8 +6,8 @@ class Buttons {
   void (*event)();
   
   public:
-    Buttons(void (*foo)(), int i) {
-      buttonPin = 2;
+    Buttons(void (*foo)(), int i, int bP) {
+      buttonPin = bP;
       previousMillis = millis();
       previousPressed = false;
       event = foo;

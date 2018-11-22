@@ -8,7 +8,7 @@ void setup() {
   // put your setup code here, to run once:
   // my_clock.init();
   my_clock = new NumberClock();
-  twtw_button = new Buttons(&buttonEvent, 150);
+  twtw_button = new Buttons(&buttonEvent, 150, 2);
   Serial.begin(9600);
 }
 
