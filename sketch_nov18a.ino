@@ -32,6 +32,5 @@ void buttonEvent() {
 }
 
 void setupEvent() {
-  // Serial.println(1);
   my_clock->setUpMode();
 }
