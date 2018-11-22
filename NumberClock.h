@@ -54,6 +54,7 @@ class NumberClock {
     void setUpMode();
     String toTwoDigits(unsigned int t);
     void changeTwtwState();
+    void plusMin();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -74,7 +75,7 @@ void NumberClock::updating() {
     if (flick) {
       tft->setTextColor(ILI9340_BLACK);
       if (setupEnabled){
-        printTime(temp_t, ILI9340_BLACK);
+        tft->fillRect(30, 47, 320, 120, ILI9340_BLACK);
       } else {
         tft->print(":");
       }
@@ -123,6 +124,14 @@ void NumberClock::printTime(unsigned int t, unsigned long int color) {
 void NumberClock::setUpMode() {
   setupEnabled = true;
   temp_t = previousTime;
+}
+
+void NumberClock::plusMin() {
+  if (temp_t / 25 == 59) {
+    temp_t = temp_t % 25;
+  } else {
+    temp_t = temp_t + 25;
+  }
 }
 
 void NumberClock::changeTwtwState() {
