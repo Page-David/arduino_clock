@@ -2,7 +2,7 @@
 #include "Buttons.h"
 
 NumberClock *my_clock = NULL;
-Buttons *twtw_button = NULL;
+Buttons twtw_button = Buttons(&buttonEvent, 150, 2);
 Buttons *setup_button = NULL;
 Buttons incr_button = Buttons(&incrEvent, 150, 5);
 
@@ -12,7 +12,6 @@ void setup() {
   // put your setup code here, to run once:
   // my_clock.init();
   my_clock = new NumberClock();
-  twtw_button = new Buttons(&buttonEvent, 150, 2);
   setup_button = new Buttons(&setupEvent, 150, 4);
   Serial.begin(9600);
 }
@@ -21,7 +20,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   updateBCL();
   my_clock->updating();
-  twtw_button->checkStates();
+  twtw_button.checkStates();
   setup_button->checkStates();
   incr_button.checkStates();
 }
