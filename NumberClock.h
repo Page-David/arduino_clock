@@ -62,7 +62,6 @@ unsigned int NumberClock::getCurrentTime() {
 }
 
 void NumberClock::updating() {
-  Serial.println(setupEnabled);
   unsigned int t = getCurrentTime();
   if (t != previousTime && !setupEnabled) {
     printTime(previousTime, ILI9340_BLACK);

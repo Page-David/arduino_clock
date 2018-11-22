@@ -4,6 +4,7 @@
 NumberClock *my_clock = NULL;
 Buttons *twtw_button = NULL;
 Buttons *setup_button = NULL;
+Buttons incr_button = Buttons(&incrEvent, 150, 5);
 
 char setupState = 0;
 
@@ -22,6 +23,7 @@ void loop() {
   my_clock->updating();
   twtw_button->checkStates();
   setup_button->checkStates();
+  incr_button.checkStates();
 }
 
 void updateBCL() {
@@ -41,5 +43,5 @@ void setupEvent() {
 }
 
 void incrEvent() {
-  
+  Serial.println(1);
 }
