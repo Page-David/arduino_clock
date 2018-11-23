@@ -80,8 +80,13 @@ void NumberClock::updating() {
     if (flick) {
       tft->setTextColor(ILI9340_BLACK);
       if (setupEnabled){
-        if (setupState == 1) tft->fillRect(30, 47, 120, 120, ILI9340_BLACK);
-        else tft->fillRect(180, 47, 120, 120, ILI9340_BLACK);
+        if (setupState == 1) {
+          tft->fillRect(30, 47, 120, 120, ILI9340_BLACK);
+          tft->fillRect(280, 87, 31, 20, ILI9340_BLACK);
+        }
+        else {
+          tft->fillRect(180, 47, 95, 120, ILI9340_BLACK);
+        }
       } else {
         tft->print(":");
       }
@@ -149,7 +154,7 @@ void NumberClock::setClockTime(unsigned int t) {
 
 void NumberClock::plusHour() {
   if (temp_t % 25 == 23) {
-    temp_t = temp_t / 25;
+    temp_t = (temp_t / 25) * 25;
   } else {
     temp_t = temp_t + 1;
   }
