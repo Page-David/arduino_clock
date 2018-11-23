@@ -33,6 +33,7 @@ class NumberClock {
   unsigned int temp_t;
 
   public:
+    char setupState;
     NumberClock() {
         tft = new Adafruit_ILI9340(_cs, _dc, _rst);
         unsigned int t = getCurrentTime();
@@ -47,6 +48,7 @@ class NumberClock {
         twtw = false;
         setupEnabled = false;
         temp_t = 0;
+        setupState = 0;
     }
     void init();
     void updating();
@@ -78,7 +80,8 @@ void NumberClock::updating() {
     if (flick) {
       tft->setTextColor(ILI9340_BLACK);
       if (setupEnabled){
-        tft->fillRect(30, 47, 320, 120, ILI9340_BLACK);
+        if (setupState == 1) tft->fillRect(30, 47, 120, 120, ILI9340_BLACK);
+        else tft->fillRect(180, 47, 120, 120, ILI9340_BLACK);
       } else {
         tft->print(":");
       }

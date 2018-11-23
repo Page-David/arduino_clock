@@ -6,8 +6,6 @@ Buttons twtw_button = Buttons(&buttonEvent, 150, 2);
 Buttons setup_button = Buttons(&setupEvent, 150, 4);
 Buttons incr_button = Buttons(&incrEvent, 150, 5);
 
-char setupState = 0;
-
 void setup() {
   // put your setup code here, to run once:
   // my_clock.init();
@@ -34,22 +32,22 @@ void buttonEvent() {
 }
 
 void setupEvent() {
-  if (setupState == 0) {
+  if (my_clock->setupState == 0) {
     my_clock->setUpMode();
-    setupState = 1;
-  } else if (setupState == 1) {
-    setupState = 2;
-  } else if (setupState == 2) {
+    my_clock->setupState = 1;
+  } else if (my_clock->setupState == 1) {
+    my_clock->setupState = 2;
+  } else if (my_clock->setupState == 2) {
     unsigned int t = my_clock->excSetUp();
     my_clock->setClockTime(t);
-    setupState = 0;
+    my_clock->setupState = 0;
   }
 }
 
 void incrEvent() {
-  if (setupState == 1){
+  if (my_clock->setupState == 1){
     my_clock->plusHour();
-  } else if (setupState == 2) {
+  } else if (my_clock->setupState == 2) {
     my_clock->plusMin();
   }
 }
