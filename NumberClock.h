@@ -52,6 +52,8 @@ class NumberClock {
     void updating();
     void printTime(unsigned int t, unsigned long int color);
     void setUpMode();
+    unsigned int excSetUp();
+    void setClockTime(unsigned int t);
     String toTwoDigits(unsigned int t);
     void changeTwtwState();
     void plusMin();
@@ -125,6 +127,21 @@ void NumberClock::printTime(unsigned int t, unsigned long int color) {
 void NumberClock::setUpMode() {
   setupEnabled = true;
   temp_t = previousTime;
+}
+
+unsigned int NumberClock::excSetUp() {
+  setupEnabled = false;
+  return temp_t;
+}
+
+void NumberClock::setClockTime(unsigned int t) {
+  tft->fillRect(30, 47, 320, 120, ILI9340_BLACK);
+  previousTime = t;
+  printTime(t, ILI9340_WHITE);
+  RTC.read(tm);
+  tm.Minute = t / 25;
+  tm.Hour = t % 25;
+  RTC.write(tm);
 }
 
 void NumberClock::plusHour() {

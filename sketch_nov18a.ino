@@ -39,6 +39,10 @@ void setupEvent() {
     setupState = 1;
   } else if (setupState == 1) {
     setupState = 2;
+  } else if (setupState == 2) {
+    unsigned int t = my_clock->excSetUp();
+    my_clock->setClockTime(t);
+    setupState = 0;
   }
 }
 
