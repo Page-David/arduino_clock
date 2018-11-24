@@ -8,6 +8,8 @@
 #include <Time.h>
 #include <DS1307RTC.h>
 
+#include <EEPROM.h>
+
 #define _sclk 13
 // #define _miso 12
 #define _mosi 11
@@ -15,6 +17,10 @@
 #define _dc 9
 #define _rst 8
 
+union alarmData {
+  unsigned int alarmTimes[3];
+  byte b[6];
+};
 
 class NumberClock {
   Adafruit_ILI9340 *tft = NULL;
@@ -31,6 +37,8 @@ class NumberClock {
 
   boolean setupEnabled;
   unsigned int temp_t;
+
+  alarmData my_alarm;
 
   public:
     char setupState;
@@ -49,6 +57,7 @@ class NumberClock {
         setupEnabled = false;
         temp_t = 0;
         setupState = 0;
+        readAlarms();
     }
     void init();
     void updating();
@@ -60,6 +69,7 @@ class NumberClock {
     void changeTwtwState();
     void plusMin();
     void plusHour();
+    void readAlarms();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -172,4 +182,10 @@ void NumberClock::changeTwtwState() {
   tft->fillRect(30, 47, 320, 120, ILI9340_BLACK);
   twtw = !twtw;
   printTime(previousTime, ILI9340_WHITE);
+}
+
+void NumberClock::readAlarms() {
+  for (int i = 0; i < 6; ++i) {
+    my_alarm.b[i] = EEPROM.read(i);
+  }
 }
