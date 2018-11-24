@@ -60,7 +60,7 @@ class NumberClock {
         tft->setRotation(1);
         tft->fillScreen(ILI9340_BLACK);
         tft->setFont(&MyFont_Regular40pt7b);
-        tft->drawLine(10, 140, 310, 140,ILI9340_WHITE);
+        tft->drawLine(10, 150, 310, 150, ILI9340_WHITE);
         printTime(t, ILI9340_WHITE);
         previousTime = t;
         flick = true;
@@ -71,6 +71,7 @@ class NumberClock {
         setupState = 0;
         readAlarms();
         getNextAlarm();
+        printNextAlarm(ILI9340_WHITE);
         ifbuzzed = false;
         my_buzzer = Buzzer();
     }
@@ -86,6 +87,7 @@ class NumberClock {
     void plusHour();
     void readAlarms();
     void getNextAlarm();
+    void printNextAlarm(unsigned long int color);
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -99,9 +101,13 @@ void NumberClock::updating() {
     printTime(previousTime, ILI9340_BLACK);
     printTime(t, ILI9340_WHITE);
     previousTime = t;
-    if (ifbuzzed) ifbuzzed = false;
+    if (ifbuzzed) {
+      getNextAlarm();
+      printNextAlarm(ILI9340_WHITE);
+      ifbuzzed = false;
+    }
   }
-  if (!setupEnabled && my_alarm_enb.enabled && t == my_alarm.alarmTimes[nextAlarmIdx]) {
+  if (!setupEnabled && !ifbuzzed && my_alarm_enb.enabled && t == my_alarm.alarmTimes[nextAlarmIdx]) {
     my_buzzer.buzz();
     ifbuzzed = true;
   }
@@ -110,7 +116,7 @@ void NumberClock::updating() {
     tft->setCursor(143, 100);
     if (flick) {
       tft->setTextColor(ILI9340_BLACK);
-      if (setupEnabled){
+      if (setupEnabled) {
         if (setupState == 1) {
           tft->fillRect(30, 47, 120, 55, ILI9340_BLACK);
           tft->fillRect(280, 87, 31, 20, ILI9340_BLACK);
@@ -118,6 +124,8 @@ void NumberClock::updating() {
         else {
           tft->fillRect(180, 47, 95, 55, ILI9340_BLACK);
         }
+      } else if (ifbuzzed) {
+        tft->fillRect(30, 47, 300, 55, ILI9340_BLACK);
       } else {
         tft->print(":");
       }
@@ -125,6 +133,8 @@ void NumberClock::updating() {
       tft->setTextColor(ILI9340_WHITE);
       if (setupEnabled) {
         printTime(temp_t, ILI9340_WHITE);
+      } else if (ifbuzzed) {
+        printTime(previousTime, ILI9340_WHITE);
       } else {
         tft->print(":");
       }
@@ -181,6 +191,8 @@ void NumberClock::setClockTime(unsigned int t) {
   tm.Minute = t % 60;
   tm.Hour = t / 60;
   RTC.write(tm);
+  getNextAlarm();
+  printNextAlarm(ILI9340_WHITE);
 }
 
 void NumberClock::plusHour() {
@@ -203,6 +215,7 @@ void NumberClock::changeTwtwState() {
   tft->fillRect(30, 47, 320, 55, ILI9340_BLACK);
   twtw = !twtw;
   printTime(previousTime, ILI9340_WHITE);
+  printNextAlarm(ILI9340_WHITE);
 }
 
 void NumberClock::readAlarms() {
@@ -220,4 +233,23 @@ void NumberClock::getNextAlarm() {
   } else {
     nextAlarmIdx = 1;
   }
+}
+
+void NumberClock::printNextAlarm(unsigned long int color) {
+  tft->setTextColor(color);
+  tft->setFont(&FreeMonoBoldOblique12pt7b);
+  tft->setCursor(20, 200);
+  tft->fillRect(22, 185, 100, 18, ILI9340_BLACK);
+  unsigned int t = my_alarm.alarmTimes[nextAlarmIdx];
+  boolean tw = false;
+  if (twtw && t / 60 > 12) {
+    t = t - 708; // 708 = 60 * 12
+    tw = true;
+  }
+  tft->print(timeToString(t));
+  if (twtw) {
+    if (tw) tft->print("PM");
+    else tft->print("AM");
+  }
+  tft->setFont(&MyFont_Regular40pt7b);
 }
