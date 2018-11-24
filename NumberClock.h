@@ -22,6 +22,11 @@ union alarmData {
   byte b[6];
 };
 
+union alarmEnabled {
+  boolean enabled;
+  byte b[1];
+};
+
 class NumberClock {
   Adafruit_ILI9340 *tft = NULL;
   unsigned int previousTime;
@@ -39,6 +44,8 @@ class NumberClock {
   unsigned int temp_t;
 
   alarmData my_alarm;
+  alarmEnabled my_alarm_enb;
+  int nextAlarmIdx;
 
   public:
     char setupState;
@@ -49,6 +56,7 @@ class NumberClock {
         tft->setRotation(1);
         tft->fillScreen(ILI9340_BLACK);
         tft->setFont(&MyFont_Regular40pt7b);
+        tft->drawLine(10, 140, 310, 140,ILI9340_WHITE);
         printTime(t, ILI9340_WHITE);
         previousTime = t;
         flick = true;
@@ -70,6 +78,7 @@ class NumberClock {
     void plusMin();
     void plusHour();
     void readAlarms();
+    void getNextAlarm();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -91,11 +100,11 @@ void NumberClock::updating() {
       tft->setTextColor(ILI9340_BLACK);
       if (setupEnabled){
         if (setupState == 1) {
-          tft->fillRect(30, 47, 120, 120, ILI9340_BLACK);
+          tft->fillRect(30, 47, 120, 55, ILI9340_BLACK);
           tft->fillRect(280, 87, 31, 20, ILI9340_BLACK);
         }
         else {
-          tft->fillRect(180, 47, 95, 120, ILI9340_BLACK);
+          tft->fillRect(180, 47, 95, 55, ILI9340_BLACK);
         }
       } else {
         tft->print(":");
@@ -153,7 +162,7 @@ unsigned int NumberClock::excSetUp() {
 }
 
 void NumberClock::setClockTime(unsigned int t) {
-  tft->fillRect(30, 47, 320, 120, ILI9340_BLACK);
+  tft->fillRect(30, 47, 320, 55, ILI9340_BLACK);
   previousTime = t;
   printTime(t, ILI9340_WHITE);
   RTC.read(tm);
@@ -179,7 +188,7 @@ void NumberClock::plusMin() {
 }
 
 void NumberClock::changeTwtwState() {
-  tft->fillRect(30, 47, 320, 120, ILI9340_BLACK);
+  tft->fillRect(30, 47, 320, 55, ILI9340_BLACK);
   twtw = !twtw;
   printTime(previousTime, ILI9340_WHITE);
 }
@@ -187,5 +196,16 @@ void NumberClock::changeTwtwState() {
 void NumberClock::readAlarms() {
   for (int i = 0; i < 6; ++i) {
     my_alarm.b[i] = EEPROM.read(i);
+  }
+  my_alarm_enb.b[0] = EEPROM.read(6);
+}
+
+void NumberClock::getNextAlarm() {
+  if (previousTime > my_alarm.alarmTimes[2] || previousTime < my_alarm.alarmTimes[0]){
+    nextAlarmIdx = 0;
+  } else if (previousTime > my_alarm.alarmTimes[1]) {
+    nextAlarmIdx = 2;
+  } else {
+    nextAlarmIdx = 1;
   }
 }
