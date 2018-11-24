@@ -11,6 +11,7 @@
 #include <EEPROM.h>
 
 #include "Buzzer.h"
+#include "pitch.h"
 
 #define _sclk 13
 // #define _miso 12
@@ -50,6 +51,9 @@ class NumberClock {
   int nextAlarmIdx;
   boolean ifbuzzed;
   Buzzer my_buzzer;
+
+  int melody[8] = {NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4};
+  int noteDurations[8] = {4, 8, 8, 4, 4, 4, 4, 4};
 
   public:
     char setupState;
@@ -108,7 +112,7 @@ void NumberClock::updating() {
     }
   }
   if (!setupEnabled && !ifbuzzed && my_alarm_enb.enabled && t == my_alarm.alarmTimes[nextAlarmIdx]) {
-    my_buzzer.buzz();
+    my_buzzer.buzz(melody, noteDurations, sizeof(melody)/sizeof(melody[0]));
     ifbuzzed = true;
   }
   unsigned long currentMillis = millis();
@@ -142,6 +146,7 @@ void NumberClock::updating() {
     flick = !flick;
     previousMillis = currentMillis;
   }
+  my_buzzer.updating();
 }
 
 String NumberClock::toTwoDigits(unsigned int t) {
