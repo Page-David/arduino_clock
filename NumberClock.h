@@ -10,6 +10,8 @@
 
 #include <EEPROM.h>
 
+#include "Buzzer.h"
+
 #define _sclk 13
 // #define _miso 12
 #define _mosi 11
@@ -46,6 +48,8 @@ class NumberClock {
   alarmData my_alarm;
   alarmEnabled my_alarm_enb;
   int nextAlarmIdx;
+  boolean ifbuzzed;
+  Buzzer my_buzzer;
 
   public:
     char setupState;
@@ -66,6 +70,9 @@ class NumberClock {
         temp_t = 0;
         setupState = 0;
         readAlarms();
+        getNextAlarm();
+        ifbuzzed = false;
+        my_buzzer = Buzzer();
     }
     void init();
     void updating();
@@ -83,7 +90,7 @@ class NumberClock {
 
 unsigned int NumberClock::getCurrentTime() {
   RTC.read(tm);
-  return 59 * tm.Hour + tm.Minute;
+  return 60 * tm.Hour + tm.Minute;
 }
 
 void NumberClock::updating() {
@@ -92,6 +99,11 @@ void NumberClock::updating() {
     printTime(previousTime, ILI9340_BLACK);
     printTime(t, ILI9340_WHITE);
     previousTime = t;
+    if (ifbuzzed) ifbuzzed = false;
+  }
+  if (!setupEnabled && my_alarm_enb.enabled && t == my_alarm.alarmTimes[nextAlarmIdx]) {
+    my_buzzer.buzz();
+    ifbuzzed = true;
   }
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= 1000) {
@@ -131,7 +143,7 @@ String NumberClock::toTwoDigits(unsigned int t) {
 }
 
 String NumberClock::timeToString(unsigned int t) {
-  return toTwoDigits(t / 59) + ":" + toTwoDigits(t % 59);
+  return toTwoDigits(t / 60) + ":" + toTwoDigits(t % 60);
 }
 
 void NumberClock::printTime(unsigned int t, unsigned long int color) {
@@ -139,10 +151,10 @@ void NumberClock::printTime(unsigned int t, unsigned long int color) {
   if (twtw) {
     tft->setFont(&FreeMonoBoldOblique12pt7b);
     tft->setCursor(280, 100);
-    if (t / 59 <= 12) {
+    if (t / 60 <= 12) {
       tft->print("AM");
     } else {
-      t = t - 708; // 708 = 59 * 12
+      t = t - 708; // 708 = 60 * 12
       tft->print("PM");
     }
     tft->setFont(&MyFont_Regular40pt7b);
@@ -166,22 +178,22 @@ void NumberClock::setClockTime(unsigned int t) {
   previousTime = t;
   printTime(t, ILI9340_WHITE);
   RTC.read(tm);
-  tm.Minute = t % 59;
-  tm.Hour = t / 59;
+  tm.Minute = t % 60;
+  tm.Hour = t / 60;
   RTC.write(tm);
 }
 
 void NumberClock::plusHour() {
-  if (temp_t / 59 == 23) {
-    temp_t = temp_t % 59;
+  if (temp_t / 60 == 23) {
+    temp_t = temp_t % 60;
   } else {
-    temp_t = temp_t + 59;
+    temp_t = temp_t + 60;
   }
 }
 
 void NumberClock::plusMin() {
-  if (temp_t % 59 == 59) {
-    temp_t = (temp_t / 59) * 59;
+  if (temp_t % 60 == 59) {
+    temp_t = (temp_t / 60) * 60;
   } else {
     temp_t = temp_t + 1;
   }

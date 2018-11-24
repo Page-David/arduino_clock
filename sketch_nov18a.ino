@@ -9,8 +9,8 @@ Buttons incr_button = Buttons(&incrEvent, 150, 5);
 void setup() {
   // put your setup code here, to run once:
   // my_clock.init();
-  my_clock = new NumberClock();
   Serial.begin(9600);
+  my_clock = new NumberClock();
 }
 
 void loop() {
