@@ -74,7 +74,7 @@ class NumberClock {
 
 unsigned int NumberClock::getCurrentTime() {
   RTC.read(tm);
-  return 25 * tm.Minute + tm.Hour;
+  return 59 * tm.Hour + tm.Minute;
 }
 
 void NumberClock::updating() {
@@ -122,7 +122,7 @@ String NumberClock::toTwoDigits(unsigned int t) {
 }
 
 String NumberClock::timeToString(unsigned int t) {
-  return toTwoDigits(t % 25) + ":" + toTwoDigits(t / 25);
+  return toTwoDigits(t / 59) + ":" + toTwoDigits(t % 59);
 }
 
 void NumberClock::printTime(unsigned int t, unsigned long int color) {
@@ -130,10 +130,10 @@ void NumberClock::printTime(unsigned int t, unsigned long int color) {
   if (twtw) {
     tft->setFont(&FreeMonoBoldOblique12pt7b);
     tft->setCursor(280, 100);
-    if (t % 25 <= 12) {
+    if (t / 59 <= 12) {
       tft->print("AM");
     } else {
-      t = t - 12;
+      t = t - 708; // 708 = 59 * 12
       tft->print("PM");
     }
     tft->setFont(&MyFont_Regular40pt7b);
@@ -157,24 +157,24 @@ void NumberClock::setClockTime(unsigned int t) {
   previousTime = t;
   printTime(t, ILI9340_WHITE);
   RTC.read(tm);
-  tm.Minute = t / 25;
-  tm.Hour = t % 25;
+  tm.Minute = t % 59;
+  tm.Hour = t / 59;
   RTC.write(tm);
 }
 
 void NumberClock::plusHour() {
-  if (temp_t % 25 == 23) {
-    temp_t = (temp_t / 25) * 25;
+  if (temp_t / 59 == 23) {
+    temp_t = temp_t % 59;
   } else {
-    temp_t = temp_t + 1;
+    temp_t = temp_t + 59;
   }
 }
 
 void NumberClock::plusMin() {
-  if (temp_t / 25 == 59) {
-    temp_t = temp_t % 25;
+  if (temp_t % 59 == 59) {
+    temp_t = (temp_t / 59) * 59;
   } else {
-    temp_t = temp_t + 25;
+    temp_t = temp_t + 1;
   }
 }
 
