@@ -5,6 +5,7 @@ NumberClock *my_clock = NULL;
 Buttons twtw_button = Buttons(&buttonEvent, 150, 2);
 Buttons setup_button = Buttons(&setupEvent, 150, 4);
 Buttons incr_button = Buttons(&incrEvent, 150, 5);
+LongShortButtons alarm_button = LongShortButtons(&alarmShort, &alarmLong, 150, 2000, 6);
 
 void setup() {
   // put your setup code here, to run once:
@@ -20,6 +21,7 @@ void loop() {
   twtw_button.checkStates();
   setup_button.checkStates();
   incr_button.checkStates();
+  alarm_button.checkStates();
 }
 
 void updateBCL() {
@@ -50,4 +52,12 @@ void incrEvent() {
   } else if (my_clock->setupState == 2) {
     my_clock->plusMin();
   }
+}
+
+void alarmShort() {
+  Serial.println("S");
+}
+
+void alarmLong() {
+  Serial.println("L");
 }
