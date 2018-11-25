@@ -198,6 +198,9 @@ void NumberClock::setClockTime(unsigned int t) {
   RTC.write(tm);
   getNextAlarm();
   printNextAlarm(ILI9340_WHITE);
+  if (ifbuzzed) {
+    ifbuzzed = false;
+  }
 }
 
 void NumberClock::plusHour() {
