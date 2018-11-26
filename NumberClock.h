@@ -169,7 +169,7 @@ void NumberClock::printTime(unsigned int t, unsigned long int color) {
     if (t / 60 <= 12) {
       tft->print("AM");
     } else {
-      t = t - 708; // 708 = 60 * 12
+      t = t - 720; // 720 = 60 * 12
       tft->print("PM");
     }
     tft->setFont(&MyFont_Regular40pt7b);
@@ -251,7 +251,7 @@ void NumberClock::printNextAlarm(unsigned long int color) {
   unsigned int t = my_alarm.alarmTimes[nextAlarmIdx];
   boolean tw = false;
   if (twtw && t / 60 > 12) {
-    t = t - 708; // 708 = 60 * 12
+    t = t - 720; // 708 = 60 * 12
     tw = true;
   }
   tft->print(timeToString(t));
