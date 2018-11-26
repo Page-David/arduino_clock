@@ -57,6 +57,7 @@ class NumberClock {
 
   public:
     char setupState;
+    char alarmSetupState;
     NumberClock() {
         tft = new Adafruit_ILI9340(_cs, _dc, _rst);
         unsigned int t = getCurrentTime();
@@ -73,6 +74,7 @@ class NumberClock {
         setupEnabled = false;
         temp_t = 0;
         setupState = 0;
+        alarmSetupState = 0;
         readAlarms();
         getNextAlarm();
         printNextAlarm(ILI9340_WHITE);

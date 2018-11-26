@@ -7,6 +7,8 @@ Buttons setup_button = Buttons(&setupEvent, 150, 4);
 Buttons incr_button = Buttons(&incrEvent, 150, 5);
 LongShortButtons alarm_button = LongShortButtons(&alarmShort, &alarmLong, 150, 2000, 6);
 
+unsigned int a[3] = {0, 0, 0};
+
 void setup() {
   // put your setup code here, to run once:
   // my_clock.init();
@@ -34,15 +36,21 @@ void buttonEvent() {
 }
 
 void setupEvent() {
-  if (my_clock->setupState == 0) {
-    my_clock->setUpMode();
-    my_clock->setupState = 1;
+  if (my_clock->alarmSetupState == 0) {
+    if (my_clock->setupState == 0) {
+      my_clock->setUpMode();
+      my_clock->setupState = 1;
+    } else if (my_clock->setupState == 1) {
+      my_clock->setupState = 2;
+    } else if (my_clock->setupState == 2) {
+      unsigned int t = my_clock->excSetUp();
+      my_clock->setClockTime(t);
+      my_clock->setupState = 0;
+    }
   } else if (my_clock->setupState == 1) {
     my_clock->setupState = 2;
   } else if (my_clock->setupState == 2) {
-    unsigned int t = my_clock->excSetUp();
-    my_clock->setClockTime(t);
-    my_clock->setupState = 0;
+    my_clock->setupState = 1;
   }
 }
 
@@ -55,9 +63,25 @@ void incrEvent() {
 }
 
 void alarmShort() {
-  my_clock->showPrompt("Alarm1", false);
+  if (my_clock->alarmSetupState != 0) {
+    if (my_clock->alarmSetupState == 3) {
+      a[2] = my_clock->excSetUp();
+      Serial.println(a[0]);
+      Serial.println(a[1]);
+      Serial.println(a[2]);
+    } else {
+      my_clock->setupState = 1;
+      a[my_clock->alarmSetupState - 1] = my_clock->excSetUp();
+      ++(my_clock->alarmSetupState);
+      my_clock->setUpMode();
+    }
+  }
 }
 
 void alarmLong() {
-  my_clock->showPrompt("Alarm1", true);
+  if (my_clock->setupState == 0 && my_clock->alarmSetupState == 0) {
+    my_clock->alarmSetupState = 1;
+    my_clock->setupState = 1;
+    my_clock->setUpMode();
+  }
 }
