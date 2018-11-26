@@ -55,9 +55,9 @@ void incrEvent() {
 }
 
 void alarmShort() {
-  Serial.println("S");
+  my_clock->showPrompt("Alarm1", false);
 }
 
 void alarmLong() {
-  Serial.println("L");
+  my_clock->showPrompt("Alarm1", true);
 }

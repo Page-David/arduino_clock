@@ -92,6 +92,7 @@ class NumberClock {
     void readAlarms();
     void getNextAlarm();
     void printNextAlarm(unsigned long int color);
+    void showPrompt(String s, boolean clean);
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -259,5 +260,17 @@ void NumberClock::printNextAlarm(unsigned long int color) {
     if (tw) tft->print("PM");
     else tft->print("AM");
   }
+  tft->setFont(&MyFont_Regular40pt7b);
+}
+
+void NumberClock::showPrompt(String s, boolean clean) {
+  if (clean) {
+    tft->setTextColor(ILI9340_BLACK);
+  } else {
+    tft->setTextColor(ILI9340_WHITE);
+  }
+  tft->setFont(&FreeMonoBoldOblique12pt7b);
+  tft->setCursor(45, 25);
+  tft->print(s);
   tft->setFont(&MyFont_Regular40pt7b);
 }
