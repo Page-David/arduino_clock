@@ -96,6 +96,7 @@ class NumberClock {
     void printNextAlarm(unsigned long int color);
     void showPrompt(String s, boolean clean);
     void clearUp();
+    void alarmWriteOut(unsigned int (&a)[3]);
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -280,4 +281,27 @@ void NumberClock::showPrompt(String s, boolean clean) {
 
 void NumberClock::clearUp() {
   tft->fillRect(30, 47, 320, 55, ILI9340_BLACK);
+}
+
+void NumberClock::alarmWriteOut(unsigned int (&a)[3]) {
+  for (int i = 0; i < 3; ++i) my_alarm.alarmTimes[i] = a[i];
+  unsigned int temp;
+  if (a[0] > a[1]) {
+    temp = a[0];
+    a[0] = a[1];
+    a[1] = temp;
+  }
+  if (a[2] < a[0]) {
+    temp = a[2];
+    a[2] = a[1];
+    a[1] = a[0];
+    a[0] = temp;
+  } else if (a[2] < a[1]) {
+    temp = a[2];
+    a[2] = a[1];
+    a[1] = temp;
+  }
+  for (int i = 0; i < 6; ++i) {
+    EEPROM.write(i, my_alarm.b[i]);
+  }
 }

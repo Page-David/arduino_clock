@@ -70,11 +70,10 @@ void alarmShort() {
     if (my_clock->alarmSetupState == 3) {
       a[2] = my_clock->excSetUp();
       my_clock->previousTime = 1600;
-      Serial.println(a[0]);
-      Serial.println(a[1]);
-      Serial.println(a[2]);
+      my_clock->alarmWriteOut(a);
+      my_clock->setupState = 0;
+      my_clock->alarmSetupState = 0;
     } else {
-      
       my_clock->setupState = 1;
       a[my_clock->alarmSetupState - 1] = my_clock->excSetUp();
       my_clock->showPrompt(promptString + (++(my_clock->alarmSetupState)), false);
