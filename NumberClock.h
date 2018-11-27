@@ -32,7 +32,6 @@ union alarmEnabled {
 
 class NumberClock {
   Adafruit_ILI9340 *tft = NULL;
-  unsigned int previousTime;
   boolean flick;
   unsigned long previousMillis;
 
@@ -56,8 +55,9 @@ class NumberClock {
   int noteDurations[8] = {4, 8, 8, 4, 4, 4, 4, 4};
 
   public:
+    unsigned int previousTime;
     char setupState;
-    char alarmSetupState;
+    int alarmSetupState;
     NumberClock() {
         tft = new Adafruit_ILI9340(_cs, _dc, _rst);
         unsigned int t = getCurrentTime();
@@ -95,6 +95,7 @@ class NumberClock {
     void getNextAlarm();
     void printNextAlarm(unsigned long int color);
     void showPrompt(String s, boolean clean);
+    void clearUp();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -223,7 +224,7 @@ void NumberClock::plusMin() {
 }
 
 void NumberClock::changeTwtwState() {
-  tft->fillRect(30, 47, 320, 55, ILI9340_BLACK);
+  clearUp();
   twtw = !twtw;
   printTime(previousTime, ILI9340_WHITE);
   printNextAlarm(ILI9340_WHITE);
@@ -275,4 +276,8 @@ void NumberClock::showPrompt(String s, boolean clean) {
   tft->setCursor(45, 25);
   tft->print(s);
   tft->setFont(&MyFont_Regular40pt7b);
+}
+
+void NumberClock::clearUp() {
+  tft->fillRect(30, 47, 320, 55, ILI9340_BLACK);
 }
