@@ -97,6 +97,7 @@ class NumberClock {
     void showPrompt(String s, boolean clean);
     void clearUp();
     void alarmWriteOut(unsigned int (&a)[3]);
+    void changeAlarmEnb();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -116,7 +117,8 @@ void NumberClock::updating() {
       ifbuzzed = false;
     }
   }
-  if (!setupEnabled && !ifbuzzed && my_alarm_enb.enabled && t == my_alarm.alarmTimes[nextAlarmIdx]) {
+  if (!setupEnabled && !ifbuzzed && my_alarm_enb.enabled
+    && t == my_alarm.alarmTimes[nextAlarmIdx]) {
     my_buzzer.buzz(melody, noteDurations, sizeof(melody)/sizeof(melody[0]));
     ifbuzzed = true;
   }
@@ -253,16 +255,22 @@ void NumberClock::printNextAlarm(unsigned long int color) {
   tft->setFont(&FreeMonoBoldOblique12pt7b);
   tft->setCursor(20, 200);
   tft->fillRect(22, 185, 100, 18, ILI9340_BLACK);
-  unsigned int t = my_alarm.alarmTimes[nextAlarmIdx];
-  boolean tw = false;
-  if (twtw && t / 60 > 12) {
-    t = t - 720; // 708 = 60 * 12
-    tw = true;
-  }
-  tft->print(timeToString(t));
-  if (twtw) {
-    if (tw) tft->print("PM");
-    else tft->print("AM");
+  if (my_alarm_enb.enabled) {
+    unsigned int t = my_alarm.alarmTimes[nextAlarmIdx];
+    boolean tw = false;
+    if (twtw && t / 60 > 12) {
+      t = t - 720; // 708 = 60 * 12
+      tw = true;
+    }
+    tft->print(timeToString(t));
+    if (twtw) {
+      if (tw) tft->print("PM");
+      else tft->print("AM");
+    }
+  } else {
+    tft->print("ALA");
+    tft->setCursor(75, 200);
+    tft->print("OFF");
   }
   tft->setFont(&MyFont_Regular40pt7b);
 }
@@ -304,4 +312,12 @@ void NumberClock::alarmWriteOut(unsigned int (&a)[3]) {
   for (int i = 0; i < 6; ++i) {
     EEPROM.write(i, my_alarm.b[i]);
   }
+  getNextAlarm();
+  printNextAlarm(ILI9340_WHITE);
+}
+
+void NumberClock::changeAlarmEnb() {
+  my_alarm_enb.enabled = !my_alarm_enb.enabled;
+  EEPROM.write(6, my_alarm_enb.b[0]);
+  printNextAlarm(ILI9340_WHITE);
 }

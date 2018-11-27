@@ -79,6 +79,8 @@ void alarmShort() {
       my_clock->showPrompt(promptString + (++(my_clock->alarmSetupState)), false);
       my_clock->setUpMode();
     }
+  } else {
+    my_clock->changeAlarmEnb();
   }
 }
 
