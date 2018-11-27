@@ -1,11 +1,19 @@
 #include "NumberClock.h"
 #include "Buttons.h"
+#include "pitch.h"
 
 NumberClock *my_clock = NULL;
 Buttons twtw_button = Buttons(&buttonEvent, 150, 2);
 Buttons setup_button = Buttons(&setupEvent, 150, 4);
 Buttons incr_button = Buttons(&incrEvent, 150, 5);
 LongShortButtons alarm_button = LongShortButtons(&alarmShort, &alarmLong, 150, 2000, 6);
+
+int melody[3][8] = {{NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4},
+                    {NOTE_C4, NOTE_C4, NOTE_G4, NOTE_G4, NOTE_A4, NOTE_A4, NOTE_G4, 0},
+                    {NOTE_A4, NOTE_B4, NOTE_C5, NOTE_B4, NOTE_C5, NOTE_E5, NOTE_B4, 0}};
+int noteDurations[3][8] = {{4, 8, 8, 4, 4, 4, 4, 4},
+                           {4, 4, 4, 4, 4, 4, 2, 0},
+                           {4, 4, 2, 4, 2, 2, 1, 0}};
 
 unsigned int a[3] = {0, 0, 0};
 String promptString = "Alarm";
@@ -15,6 +23,7 @@ void setup() {
   // my_clock.init();
   Serial.begin(9600);
   my_clock = new NumberClock();
+  my_clock->setMelody(melody[1], noteDurations[1], 8);
 }
 
 void loop() {
@@ -56,10 +65,14 @@ void setupEvent() {
 }
 
 void incrEvent() {
-  if (my_clock->setupState == 1){
-    my_clock->plusHour();
-  } else if (my_clock->setupState == 2) {
-    my_clock->plusMin();
+  if (my_clock->setupState != 0){
+    if (my_clock->setupState == 1){
+      my_clock->plusHour();
+    } else if (my_clock->setupState == 2) {
+      my_clock->plusMin();
+    }
+  } else {
+    my_clock->testAlarm();
   }
 }
 

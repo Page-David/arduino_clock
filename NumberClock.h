@@ -11,7 +11,6 @@
 #include <EEPROM.h>
 
 #include "Buzzer.h"
-#include "pitch.h"
 
 #define _sclk 13
 // #define _miso 12
@@ -51,8 +50,9 @@ class NumberClock {
   boolean ifbuzzed;
   Buzzer my_buzzer;
 
-  int melody[8] = {NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4};
-  int noteDurations[8] = {4, 8, 8, 4, 4, 4, 4, 4};
+  int *melody;
+  int *noteDurations;
+  int noteLength;
 
   public:
     unsigned int previousTime;
@@ -98,6 +98,8 @@ class NumberClock {
     void clearUp();
     void alarmWriteOut(unsigned int (&a)[3]);
     void changeAlarmEnb();
+    void setMelody(int *m, int *l, const int len);
+    void testAlarm();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -119,7 +121,7 @@ void NumberClock::updating() {
   }
   if (!setupEnabled && !ifbuzzed && my_alarm_enb.enabled
     && t == my_alarm.alarmTimes[nextAlarmIdx]) {
-    my_buzzer.buzz(melody, noteDurations, sizeof(melody)/sizeof(melody[0]));
+    my_buzzer.buzz(melody, noteDurations, noteLength);
     ifbuzzed = true;
   }
   unsigned long currentMillis = millis();
@@ -320,4 +322,14 @@ void NumberClock::changeAlarmEnb() {
   my_alarm_enb.enabled = !my_alarm_enb.enabled;
   EEPROM.write(6, my_alarm_enb.b[0]);
   printNextAlarm(ILI9340_WHITE);
+}
+
+void NumberClock::setMelody(int *m, int *l, const int len) {
+  melody = m;
+  noteDurations = l;
+  noteLength = len;
+}
+
+void NumberClock::testAlarm() {
+  if (!ifbuzzed) my_buzzer.buzz(melody, noteDurations, noteLength);
 }
