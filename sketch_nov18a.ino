@@ -1,6 +1,12 @@
 #include "NumberClock.h"
 #include "Buttons.h"
 #include "pitch.h"
+#include <EEPROM.h>
+
+union alarmMusic {
+  int idx;
+  byte b[2];
+};
 
 NumberClock *my_clock = NULL;
 Buttons twtw_button = Buttons(&buttonEvent, 150, 2);
@@ -18,12 +24,17 @@ int noteDurations[3][8] = {{4, 8, 8, 4, 4, 4, 4, 4},
 unsigned int a[3] = {0, 0, 0};
 String promptString = "Alarm";
 
+alarmMusic my_alamu;
+
 void setup() {
   // put your setup code here, to run once:
   // my_clock.init();
   Serial.begin(9600);
   my_clock = new NumberClock();
   my_clock->setMelody(melody[1], noteDurations[1], 8);
+  my_alamu.b[0] = EEPROM.read(7);
+  my_alamu.b[1] = EEPROM.read(8);
+  // Serial.println(my_alamu.idx);
 }
 
 void loop() {
@@ -72,7 +83,7 @@ void incrEvent() {
       my_clock->plusMin();
     }
   } else {
-    my_clock->testAlarm();
+    changeAlarmMusic();
   }
 }
 
@@ -104,4 +115,13 @@ void alarmLong() {
     my_clock->setupState = 1;
     my_clock->setUpMode();
   }
+}
+
+void changeAlarmMusic() {
+  if (my_alamu.idx == 2) my_alamu.idx = 0;
+  else ++(my_alamu.idx);
+  EEPROM.write(7, my_alamu.b[0]);
+  EEPROM.write(8, my_alamu.b[1]);
+  my_clock->setMelody(melody[my_alamu.idx], noteDurations[my_alamu.idx], 8);
+  my_clock->testAlarm();
 }
