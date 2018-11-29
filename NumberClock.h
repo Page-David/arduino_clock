@@ -12,12 +12,18 @@
 
 #include "Buzzer.h"
 
+#include "DHT.h"
+
+#define DHTPIN 7
+
 #define _sclk 13
 // #define _miso 12
 #define _mosi 11
 #define _cs 10
 #define _dc 9
 #define _rst 8
+
+DHT dht(DHTPIN, DHT22);
 
 union alarmData {
   unsigned int alarmTimes[3];
@@ -66,6 +72,7 @@ class NumberClock {
         tft->fillScreen(ILI9340_BLACK);
         tft->setFont(&MyFont_Regular40pt7b);
         tft->drawLine(10, 150, 310, 150, ILI9340_WHITE);
+        tft->drawLine(128, 160, 128, 225, ILI9340_WHITE);
         printTime(t, ILI9340_WHITE);
         previousTime = t;
         flick = true;
@@ -80,6 +87,8 @@ class NumberClock {
         printNextAlarm(ILI9340_WHITE);
         ifbuzzed = false;
         my_buzzer = Buzzer();
+        dht.begin();
+        printDHT();
     }
     void init();
     void updating();
@@ -100,6 +109,8 @@ class NumberClock {
     void changeAlarmEnb();
     void setMelody(int *m, int *l, const int len);
     void testAlarm();
+    void printDHT();
+    String stringCut(float x);
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -118,6 +129,7 @@ void NumberClock::updating() {
       printNextAlarm(ILI9340_WHITE);
       ifbuzzed = false;
     }
+    printDHT();
   }
   if (!setupEnabled && !ifbuzzed && my_alarm_enb.enabled
     && t == my_alarm.alarmTimes[nextAlarmIdx]) {
@@ -332,4 +344,21 @@ void NumberClock::setMelody(int *m, int *l, const int len) {
 
 void NumberClock::testAlarm() {
   if (!ifbuzzed) my_buzzer.buzz(melody, noteDurations, noteLength);
+}
+
+void NumberClock::printDHT() {
+  tft->setTextColor(ILI9340_WHITE);
+  tft->setFont(&FreeMonoBoldOblique12pt7b);
+  tft->fillRect(135, 185, 168, 18, ILI9340_BLACK);
+  tft->setCursor(135, 200);
+  tft->print(stringCut(dht.readTemperature()) + "*C");
+  tft->setCursor(240, 200);
+  tft->print(stringCut(dht.readHumidity()));
+  tft->setFont(&MyFont_Regular40pt7b);
+}
+
+String NumberClock::stringCut(float x) {
+  char result[6] = "";
+  dtostrf(x, 4, 1, result);
+  return result;
 }
