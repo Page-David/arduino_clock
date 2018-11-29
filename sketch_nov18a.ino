@@ -110,8 +110,7 @@ void alarmShort() {
 
 void alarmLong() {
   if (my_clock->setupState == 0 && my_clock->alarmSetupState == 0) {
-    my_clock->showPrompt("Alarm1", false);
-    my_clock->alarmSetupState = 1;
+    my_clock->showPrompt(promptString + (++(my_clock->alarmSetupState)), false);
     my_clock->setupState = 1;
     my_clock->setUpMode();
   }
