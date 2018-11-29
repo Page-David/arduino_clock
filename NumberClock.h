@@ -73,7 +73,6 @@ class NumberClock {
         tft->setFont(&MyFont_Regular40pt7b);
         tft->drawLine(10, 150, 310, 150, ILI9340_WHITE);
         tft->drawLine(128, 160, 128, 225, ILI9340_WHITE);
-        printTime(t, ILI9340_WHITE);
         previousTime = t;
         flick = true;
         previousMillis = millis();
@@ -88,6 +87,7 @@ class NumberClock {
         ifbuzzed = false;
         my_buzzer = Buzzer();
         dht.begin();
+        printTime(t, ILI9340_WHITE);
         printDHT();
     }
     void init();
