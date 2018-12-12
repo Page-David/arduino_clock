@@ -306,7 +306,6 @@ void NumberClock::clearUp() {
 }
 
 void NumberClock::alarmWriteOut(unsigned int (&a)[3]) {
-  for (int i = 0; i < 3; ++i) my_alarm.alarmTimes[i] = a[i];
   unsigned int temp;
   if (a[0] > a[1]) {
     temp = a[0];
@@ -323,11 +322,14 @@ void NumberClock::alarmWriteOut(unsigned int (&a)[3]) {
     a[2] = a[1];
     a[1] = temp;
   }
+  for (int i = 0; i < 3; ++i) my_alarm.alarmTimes[i] = a[i];
   for (int i = 0; i < 6; ++i) {
     EEPROM.write(i, my_alarm.b[i]);
   }
   getNextAlarm();
   printNextAlarm(ILI9340_WHITE);
+  clearUp();
+  printTime(getCurrentTime(), ILI9340_WHITE);
 }
 
 void NumberClock::changeAlarmEnb() {
