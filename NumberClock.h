@@ -56,8 +56,8 @@ class NumberClock {
   boolean ifbuzzed;
   Buzzer my_buzzer;
 
-  int *melody;
-  int *noteDurations;
+  unsigned char *melody;
+  unsigned long *noteDurations;
   int noteLength;
 
   public:
@@ -107,7 +107,7 @@ class NumberClock {
     void clearUp();
     void alarmWriteOut(unsigned int (&a)[3]);
     void changeAlarmEnb();
-    void setMelody(int *m, int *l, const int len);
+    void setMelody(unsigned char *m, unsigned long *l, const int len);
     void testAlarm();
     void printDHT();
     String stringCut(float x);
@@ -338,7 +338,7 @@ void NumberClock::changeAlarmEnb() {
   printNextAlarm(ILI9340_WHITE);
 }
 
-void NumberClock::setMelody(int *m, int *l, const int len) {
+void NumberClock::setMelody(unsigned char *m, unsigned long *l, const int len) {
   melody = m;
   noteDurations = l;
   noteLength = len;

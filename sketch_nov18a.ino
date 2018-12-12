@@ -1,6 +1,5 @@
 #include "NumberClock.h"
 #include "Buttons.h"
-#include "pitch.h"
 #include <EEPROM.h>
 
 union alarmMusic {
@@ -14,12 +13,12 @@ Buttons setup_button = Buttons(&setupEvent, 150, 4);
 Buttons incr_button = Buttons(&incrEvent, 150, 5);
 LongShortButtons alarm_button = LongShortButtons(&alarmShort, &alarmLong, 150, 2000, 6);
 
-int melody[3][8] = {{NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4},
-                    {NOTE_C4, NOTE_C4, NOTE_G4, NOTE_G4, NOTE_A4, NOTE_A4, NOTE_G4, 0},
-                    {NOTE_A4, NOTE_B4, NOTE_C5, NOTE_B4, NOTE_C5, NOTE_E5, NOTE_B4, 0}};
-int noteDurations[3][8] = {{4, 8, 8, 4, 4, 4, 4, 4},
-                           {4, 4, 4, 4, 4, 4, 2, 0},
-                           {4, 4, 2, 4, 2, 2, 1, 0}};
+unsigned char melody[3][1] = {{0x01},
+                              {0x02},
+                              {0x03}};
+unsigned long noteDurations[3][8] = {{960000},
+                                     {960000},
+                                     {960000}};
 
 unsigned int a[3] = {0, 0, 0};
 String promptString = "Alarm";
@@ -31,9 +30,9 @@ void setup() {
   // my_clock.init();
   Serial.begin(9600);
   my_clock = new NumberClock();
-  my_clock->setMelody(melody[1], noteDurations[1], 8);
   my_alamu.b[0] = EEPROM.read(7);
   my_alamu.b[1] = EEPROM.read(8);
+  my_clock->setMelody(melody[my_alamu.idx], noteDurations[my_alamu.idx], 1);
   // Serial.println(my_alamu.idx);
 }
 
@@ -120,6 +119,6 @@ void changeAlarmMusic() {
   else ++(my_alamu.idx);
   EEPROM.write(7, my_alamu.b[0]);
   EEPROM.write(8, my_alamu.b[1]);
-  my_clock->setMelody(melody[my_alamu.idx], noteDurations[my_alamu.idx], 8);
+  my_clock->setMelody(melody[my_alamu.idx], noteDurations[my_alamu.idx], 1);
   my_clock->testAlarm();
 }
