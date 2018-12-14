@@ -19,7 +19,7 @@ unsigned char melody[3][1] = {{0x01},
                               {0x03}};
 unsigned int noteDurations[3][8] = {{15},
                                      {15},
-                                     {16}};
+                                     {17}};
 
 unsigned int a[3] = {0, 0, 0};
 String promptString = "Alarm";

@@ -401,7 +401,7 @@ void NumberClock::testtestAlarm() {
     b[3] = 1;
     if (h > 20) {
       a[4] = 0x04 + (h % 10);
-      b[4] = 0;
+      b[4] = 1;
     } else {
       a[4] = 0x17;
       b[4] = 0;
@@ -414,7 +414,7 @@ void NumberClock::testtestAlarm() {
     a[4] = 0x17;
     b[4] = 0;
   } else if (h == 2) {
-    a[2] = 12;
+    a[2] = 0x12;
     b[2] = 1;
     a[3] = 0x17;
     b[3] = 0;
@@ -468,5 +468,7 @@ void NumberClock::testtestAlarm() {
     a[9] = 0x17;
     b[9] = 0;
   }
-  my_buzzer.buzz(a, b, 10);
+  if (!my_buzzer.working) {
+    my_buzzer.buzz(a, b, 10);
+  }
 }

@@ -8,7 +8,7 @@ class Buzzer {
 
   public:
     Buzzer() {
-      volume(0x10);
+      volume(0x1E);
       working = false;
     }
     boolean working;
