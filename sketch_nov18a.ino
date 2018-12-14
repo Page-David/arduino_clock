@@ -12,13 +12,14 @@ Buttons twtw_button = Buttons(&buttonEvent, 150, 2);
 Buttons setup_button = Buttons(&setupEvent, 150, 4);
 Buttons incr_button = Buttons(&incrEvent, 150, 5);
 LongShortButtons alarm_button = LongShortButtons(&alarmShort, &alarmLong, 150, 2000, 6);
+AnalogButtons sound_button = AnalogButtons(&soundEvent, 3, A1);
 
 unsigned char melody[3][1] = {{0x01},
                               {0x02},
                               {0x03}};
-unsigned long noteDurations[3][8] = {{960000},
-                                     {960000},
-                                     {960000}};
+unsigned int noteDurations[3][8] = {{15},
+                                     {15},
+                                     {16}};
 
 unsigned int a[3] = {0, 0, 0};
 String promptString = "Alarm";
@@ -44,6 +45,7 @@ void loop() {
   setup_button.checkStates();
   incr_button.checkStates();
   alarm_button.checkStates();
+  sound_button.checkStates();
 }
 
 void updateBCL() {
@@ -112,6 +114,10 @@ void alarmLong() {
     my_clock->setupState = 1;
     my_clock->setUpMode();
   }
+}
+
+void soundEvent() {
+  my_clock->testtestAlarm();
 }
 
 void changeAlarmMusic() {

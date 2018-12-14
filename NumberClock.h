@@ -57,7 +57,7 @@ class NumberClock {
   Buzzer my_buzzer;
 
   unsigned char *melody;
-  unsigned long *noteDurations;
+  unsigned int *noteDurations;
   int noteLength;
 
   public:
@@ -90,6 +90,10 @@ class NumberClock {
         printTime(t, ILI9340_WHITE);
         printDHT();
     }
+    ~NumberClock() {
+      delete noteDurations;
+      delete melody;
+    }
     void init();
     void updating();
     void printTime(unsigned int t, unsigned long int color);
@@ -107,10 +111,11 @@ class NumberClock {
     void clearUp();
     void alarmWriteOut(unsigned int (&a)[3]);
     void changeAlarmEnb();
-    void setMelody(unsigned char *m, unsigned long *l, const int len);
+    void setMelody(unsigned char *m, unsigned int *l, const int len);
     void testAlarm();
     void printDHT();
     String stringCut(float x);
+    void testtestAlarm();
 };
 
 unsigned int NumberClock::getCurrentTime() {
@@ -338,7 +343,7 @@ void NumberClock::changeAlarmEnb() {
   printNextAlarm(ILI9340_WHITE);
 }
 
-void NumberClock::setMelody(unsigned char *m, unsigned long *l, const int len) {
+void NumberClock::setMelody(unsigned char *m, unsigned int *l, const int len) {
   melody = m;
   noteDurations = l;
   noteLength = len;
@@ -363,4 +368,105 @@ String NumberClock::stringCut(float x) {
   char result[6] = "";
   dtostrf(x, 4, 1, result);
   return result;
+}
+
+void NumberClock::testtestAlarm() {
+  unsigned char a[10];
+  unsigned int b[10];
+  a[0] = 0x15;
+  b[0] = 3;
+  unsigned int t = previousTime;
+
+  if (twtw) {
+    if (t / 60 <= 12) {
+      a[1] = 0x13;
+      b[1] = 1;
+    } else {
+      a[1] = 0x14;
+      b[1] = 1;
+      t = t - 720;
+    }
+  } else {
+    a[1] = 0x17;
+    b[1] = 0;
+  }
+
+  unsigned int h = t / 60;
+  unsigned int m = t % 60;
+
+  if (h >= 20) {
+    a[2] = 0x06;
+    b[2] = 1;
+    a[3] = 0x0E;
+    b[3] = 1;
+    if (h > 20) {
+      a[4] = 0x04 + (h % 10);
+      b[4] = 0;
+    } else {
+      a[4] = 0x17;
+      b[4] = 0;
+    }
+  } else if (h > 10) {
+    a[2] = 0x0E;
+    b[2] = 1;
+    a[3] = 0x04 + (h % 10);
+    b[3] = 1;
+    a[4] = 0x17;
+    b[4] = 0;
+  } else if (h == 2) {
+    a[2] = 12;
+    b[2] = 1;
+    a[3] = 0x17;
+    b[3] = 0;
+    a[4] = 0x17;
+    b[4] = 0;
+  } else {
+    a[2] = 0x04 + h;
+    b[2] = 1;
+    a[3] = 0x17;
+    b[3] = 0;
+    a[4] = 0x17;
+    b[4] = 0;
+  }
+
+  a[5] = 0x10;
+  b[5] = 1;
+
+  if (m == 0) {
+    a[6] = 0x17;
+    b[6] = 0;
+    a[7] = 0x17;
+    b[7] = 0;
+  } else if (m <= 10) {
+    a[6] = 0x17;
+    b[6] = 0;
+    a[7] = 0x16;
+    b[7] = 1;
+  } else if (m < 20) {
+    a[6] = 0x17;
+    b[6] = 0;
+    a[7] = 0x0E;
+    b[7] = 1;
+  } else {
+    a[6] = 0x04 + (m / 10);
+    b[6] = 1;
+    a[7] = 0x0E;
+    b[7] = 1;
+  }
+
+  if ((m % 10) == 0) {
+    a[8] = 0x17;
+    b[8] = 0;
+  } else {
+    a[8] = 0x04 + (m % 10);
+    b[8] = 1;
+  }
+  if (m != 0) {
+    a[9] = 0x0F;
+    b[9] = 1;
+  } else {
+    a[9] = 0x17;
+    b[9] = 0;
+  }
+  my_buzzer.buzz(a, b, 10);
 }
