@@ -41,6 +41,24 @@ class LongShortButtons {
     void checkStates();
 };
 
+class AnalogButtons {
+  int buttonPin;
+  unsigned int interval;
+  unsigned long previousMillis;
+  boolean previousPressed;
+  void (*event)();
+
+  public:
+    AnalogButtons(void (*foo)(), int i, int bP) {
+      buttonPin = bP;
+      previousMillis = millis();
+      previousPressed = false;
+      event = foo;
+      interval = i;
+    }
+    void checkStates();
+};
+
 void Buttons::checkStates() {
   if (digitalRead(buttonPin)) {
     if (previousPressed){
@@ -70,7 +88,7 @@ void LongShortButtons::checkStates() {
       }
     } else {
       previousMillis = millis();
-      previousPressed = true;   
+      previousPressed = true;
     }
   } else {
     if (shortPressed) {
@@ -78,6 +96,22 @@ void LongShortButtons::checkStates() {
       shortPressed = false;
     }
     if (limited) limited = false;
+    previousPressed = false;
+  }
+}
+
+void AnalogButtons::checkStates() {
+  if (analogRead(buttonPin) > 150) {
+    if (previousPressed){
+      if (millis() - previousMillis >= interval) {
+        event();
+        previousPressed = false;
+      }
+    } else {
+      previousMillis = millis();
+      previousPressed = true;
+    }
+  } else {
     previousPressed = false;
   }
 }
